@@ -11,7 +11,7 @@ module.exports = angular.module('app1.view2', ['ui.router'])
 function routing($stateProvider) {
     $stateProvider.state('app1.view2', {
         url: '/view2',
-        templateUrl: 'view2/view2.prt.html',
+        templateUrl: 'app1/view2/view2.prt.html',
         controller: 'app1.view2.ViewCtrl as vm'
     });
 }

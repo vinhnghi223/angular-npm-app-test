@@ -2,14 +2,28 @@
   "name": "@atorma/multimodule-angular-app-app-1",
   "version": "0.0.3",
   "license": "MIT",
-  "main": "src/module.js",
+  "main": "src/app1/module.js",
   "myapp-assets": {
-    "angular-partials": "src/**/*.prt.html"
+    "angular-partials": "src/app1/**/*.prt.html"
   },
   "dependencies": {
     "angular": "1.4.9",
     "angular-ui-router": "1.0.0-alpha0",
     "lodash": "4.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "browserify": "^13.0.0",
+    "del": "^2.2.0",
+    "glob": "^6.0.4",
+    "gulp": "3.9.0",
+    "gulp-angular-templatecache": "^1.8.0",
+    "gulp-if": "2.0.0",
+    "gulp-util": "^3.0.7",
+    "gulp-webserver": "^0.9.1",
+    "join-path": "1.1.0",
+    "run-sequence": "^1.1.5",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0"
+  }
 }

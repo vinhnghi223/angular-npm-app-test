@@ -14,6 +14,6 @@ function routing($stateProvider) {
     $stateProvider.state('app1', {
         abstract: true,
         url: "/app1",
-        templateUrl: 'app1.prt.html'
+        templateUrl: 'app1/app1.prt.html'
     });
 }

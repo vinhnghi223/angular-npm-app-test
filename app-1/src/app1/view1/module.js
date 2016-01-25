@@ -10,6 +10,6 @@ module.exports = angular.module('app1.view1', ['ui.router'])
 function routing($stateProvider) {
     $stateProvider.state('app1.view1', {
         url: "", // default for this app
-        templateUrl: 'view1/view1.prt.html'
+        templateUrl: 'app1/view1/view1.prt.html'
     });
 }
