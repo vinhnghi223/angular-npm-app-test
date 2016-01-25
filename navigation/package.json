@@ -2,9 +2,9 @@
   "name": "@atorma/multimodule-angular-app-navigation",
   "version": "0.0.4",
   "license": "MIT",
-  "main": "src/module.js",
+  "main": "src/navigation/module.js",
   "myapp-assets": {
-    "angular-templates": "src/**/*.tpl.html"
+    "angular-templates": "src/navigation/**/*.tpl.html"
   },
   "dependencies": {
     "angular": "1.4.9",
