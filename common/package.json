@@ -1,0 +1,11 @@
+{
+  "name": "multimodule-angular-app-common",
+  "private": true,
+  "version": "0.0.0",
+  "myapp-assets": {
+    "css": "assets/**/css/*.css"
+  },
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}
