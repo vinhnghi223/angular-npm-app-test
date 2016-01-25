@@ -10,7 +10,8 @@ var buffer = require('vinyl-buffer');
 var runSequence = require('run-sequence');
 var _ = require('lodash');
 var path = require('join-path');
-var ngTemplateCache = require('gulp-angular-templatecache')
+var ngTemplateCache = require('gulp-angular-templatecache');
+var mergeStream = require('merge-stream');
 
 var config = require('./config');
 var browserifiers = require('./browserifiers');
@@ -119,33 +120,40 @@ gulp.task('lib-resources', function () {
 
 
 gulp.task('angular-templates', function () {
-    var templateGlobs = [];
+    var merged = mergeStream();
+    var getProperty = _.property(['myapp-assets', 'angular-templates']);
     _.each(config.modules, function(modulePath) {
         var packageJson = require(path(modulePath, 'package.json'));
-        var glob = path('node_modules', modulePath, packageJson['myapp-assets']['angular-templates']);
-        templateGlobs.push(glob);
+        if (!getProperty(packageJson)) return;
+
+        var templateGlob = path('./node_modules', modulePath, getProperty(packageJson));
+        var basePath = path('./node_modules', modulePath, 'src');  // hard-coded 'src' -- bad, alternatives?
+        merged.add(gulp.src(templateGlob, {base: basePath}));
     });
 
-    // Alternatively, each module could create a template module using this
-    // with option moduleSystem: "Browserify"
-    return gulp.src(templateGlobs)
-        .pipe(ngTemplateCache({
+    return merged.pipe(ngTemplateCache({
             module: "mainApp",
-            moduleSystem: "IIFE"
-        }))
-        .pipe(gulp.dest(config.paths.build));
+            moduleSystem: "IIFE",
+            transformUrl: function (url) {
+                return url.replace(path(__dirname, '/'), '');
+            }
+        })
+    ).pipe(gulp.dest(config.paths.build));
 });
 
 gulp.task('angular-partials', function () {
-    var partialGlobs = [];
+    var merged = mergeStream();
+    var getProperty = _.property(['myapp-assets', 'angular-partials']);
     _.each(config.modules, function(modulePath) {
         var packageJson = require(path(modulePath, 'package.json'));
-        var glob = path('node_modules', modulePath, packageJson['myapp-assets']['angular-partials']);
-        partialGlobs.push(glob);
+        if (!getProperty(packageJson)) return;
+
+        var templateGlob = path('node_modules', modulePath, getProperty(packageJson));
+        var basePath =  path('node_modules', modulePath, 'src');  // hard-coded 'src' -- bad, alternatives?
+        merged.add(gulp.src(templateGlob, {base: basePath}));
     });
 
-    return gulp.src(partialGlobs)
-        .pipe(gulp.dest(config.paths.build));
+    return merged.pipe(gulp.dest(config.paths.build));
 });
 
 
