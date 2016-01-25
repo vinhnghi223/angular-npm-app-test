@@ -1,6 +1,5 @@
 {
-  "name": "multimodule-angular-app-main",
-  "private": true,
+  "name": "@atorma/multimodule-angular-app-main",
   "version": "0.0.0",
   "license": "MIT",
   "dependencies": {
