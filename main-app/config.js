@@ -3,7 +3,7 @@ module.exports = {
         appSourceMain: 'src/main-app.js',
         html: 'src/**/*.html',
         resources: ['src/resources/**'],
-        libResources: ['node'],
+        libResources: [],
         build: 'build',
         appDestName: 'main-app.js',
         libDestName: 'libs.js'
