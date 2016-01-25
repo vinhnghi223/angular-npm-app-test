@@ -10,6 +10,7 @@ module.exports = {
     },
     modules: [
         "@atorma/multimodule-angular-app-navigation",
-        "@atorma/multimodule-angular-app-app-1"
+        "@atorma/multimodule-angular-app-app-1",
+        "@atorma/multimodule-angular-app-common"
     ]
 };

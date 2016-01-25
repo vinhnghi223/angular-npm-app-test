@@ -31,7 +31,8 @@ gulp.task('build', function (cb) {
             'resources',
             'lib-resources',
             'angular-templates',
-            'angular-partials'
+            'angular-partials',
+            'module-static-assets'
         ],
         cb
     );
@@ -156,6 +157,20 @@ gulp.task('angular-partials', function () {
     return merged.pipe(gulp.dest(config.paths.build));
 });
 
+gulp.task('module-static-assets', function() {
+    var merged = mergeStream();
+    var getProperty = _.property(['myapp-assets', 'css']); // instead of 'css', assets that can be taken as such could be under 'static'
+    _.each(config.modules, function(modulePath) {
+        var packageJson = require(path(modulePath, 'package.json'));
+        if (!getProperty(packageJson)) return;
+
+        var templateGlob = path('node_modules', modulePath, getProperty(packageJson));
+        var basePath =  path('node_modules', modulePath);
+        merged.add(gulp.src(templateGlob, {base: basePath}));
+    });
+
+    return merged.pipe(gulp.dest(config.paths.build));
+});
 
 gulp.task('webserver', function() {
     gulp.src(config.paths.build)
