@@ -1,0 +1,15 @@
+{
+  "name": "@atorma/multimodule-angular-app-navigation",
+  "version": "0.0.4",
+  "license": "MIT",
+  "main": "src/module.js",
+  "myapp-assets": {
+    "angular-templates": "src/**/*.tpl.html"
+  },
+  "dependencies": {
+    "angular": "1.4.9",
+    "angular-ui-router": "1.0.0-alpha0",
+    "lodash": "4.0.0"
+  },
+  "devDependencies": {}
+}
