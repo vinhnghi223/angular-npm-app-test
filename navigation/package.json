@@ -1,6 +1,6 @@
 {
   "name": "@atorma/multimodule-angular-app-navigation",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "MIT",
   "main": "src/navigation/module.js",
   "myapp-assets": {
