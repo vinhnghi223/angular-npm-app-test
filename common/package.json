@@ -1,5 +1,5 @@
 {
-  "name": "multimodule-angular-app-common",
+  "name": "@atorma/multimodule-angular-app-common",
   "version": "0.0.0",
   "myapp-assets": {
     "css": "assets/**/css/*.css"
