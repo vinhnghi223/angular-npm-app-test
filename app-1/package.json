@@ -4,7 +4,7 @@
   "license": "MIT",
   "main": "src/app1/module.js",
   "myapp-assets": {
-    "angular-partials": "src/app1/**/*.prt.html"
+    "static": "src/**/app1/**/*.prt.html"
   },
   "dependencies": {
     "angular": "1.4.9",

@@ -26,20 +26,16 @@ gulp.task('build', function (cb) {
     runSequence('clean',
         [
             'js-libs',
-            'js-app',
-            'html',
-            'resources',
-            'lib-resources',
-            'angular-templates',
-            'angular-partials',
-            'module-static-assets'
+            'myapp-js',
+            'myapp-angular-templates',
+            'myapp-static-assets'
         ],
         cb
     );
 });
 
 gulp.task('watch', function (cb) {
-    runSequence(['watch:js-app', 'watch:html', 'watch:resources'], cb);
+    runSequence(['watch:myapp-js', 'watch:myapp-angular-templates', 'watch:myapp-static-assets'], cb);
 });
 
 gulp.task('run', function (cb) {
@@ -69,14 +65,14 @@ gulp.task('js-libs', function () {
     });
 });
 
-gulp.task('js-app', function() {
+gulp.task('myapp-js', function() {
     return browserifyBuild({
         browserifier: browserifiers.forApp,
         outputFileName: config.paths.appDestName
     });
 });
 
-gulp.task('watch:js-app', function () {
+gulp.task('watch:myapp-js', function () {
     var watchifier = function(opts) {
         return watchify(browserifiers.forApp(opts))
             .on('log', gutil.log.bind(gutil.log, "Watchify (app):"))
@@ -93,43 +89,22 @@ gulp.task('watch:js-app', function () {
     }
 });
 
+/*
+ * To make it easy to cache angular templates and to copy static assets,
+ * modules must be careful to use the correct base path in their globs!
+ */
 
-gulp.task('html', function () {
-    return gulp.src(config.paths.html)
-        .pipe(gulp.dest(config.paths.build));
-});
-
-gulp.task('watch:html', function () {
-    return gulp.watch(config.paths.html, ['html']);
-});
-
-
-gulp.task('resources', function () {
-    return gulp.src(config.paths.resources)
-        .pipe(gulp.dest(config.paths.build + '/resources'));
-});
-
-gulp.task('watch:resources', function () {
-    return gulp.watch(config.paths.resources, ['resources']);
-});
-
-
-gulp.task('lib-resources', function () {
-    return gulp.src(config.paths.libResources)
-        .pipe(gulp.dest(config.paths.build + '/resources'));
-});
-
-
-gulp.task('angular-templates', function () {
+gulp.task('myapp-angular-templates', function () {
     var merged = mergeStream();
     var getProperty = _.property(['myapp-assets', 'angular-templates']);
-    _.each(config.modules, function(modulePath) {
-        var packageJson = require(path(modulePath, 'package.json'));
-        if (!getProperty(packageJson)) return;
 
-        var templateGlob = path('./node_modules', modulePath, getProperty(packageJson));
-        var basePath = path('./node_modules', modulePath, 'src');  // hard-coded 'src' -- bad, alternatives?
-        merged.add(gulp.src(templateGlob, {base: basePath}));
+    var modules = _.concat(['./'], config.modules); // include main app
+    _.each(modules, function(modulePath) {
+        var packageJson = require(modulePath == './' ? './package.json' : path(modulePath, 'package.json'));
+        if (getProperty(packageJson)) {
+            var glob = path(modulePath == './' ? '' : 'node_modules', modulePath, getProperty(packageJson));
+            merged.add(gulp.src(glob));
+        }
     });
 
     return merged.pipe(ngTemplateCache({
@@ -142,35 +117,53 @@ gulp.task('angular-templates', function () {
     ).pipe(gulp.dest(config.paths.build));
 });
 
-gulp.task('angular-partials', function () {
-    var merged = mergeStream();
-    var getProperty = _.property(['myapp-assets', 'angular-partials']);
-    _.each(config.modules, function(modulePath) {
-        var packageJson = require(path(modulePath, 'package.json'));
-        if (!getProperty(packageJson)) return;
+gulp.task('watch:myapp-angular-templates', function () {
+    var getProperty = _.property(['myapp-assets', 'angular-templates']);
 
-        var templateGlob = path('node_modules', modulePath, getProperty(packageJson));
-        var basePath =  path('node_modules', modulePath, 'src');  // hard-coded 'src' -- bad, alternatives?
-        merged.add(gulp.src(templateGlob, {base: basePath}));
+    var modules = _.concat(['./'], config.modules); // include main app
+    var globs = [];
+    _.each(modules, function(modulePath) {
+        var packageJson = require(modulePath == './' ? './package.json' : path(modulePath, 'package.json'));
+        if (getProperty(packageJson)) {
+            globs.push(path(modulePath == './' ? '' : 'node_modules', modulePath, getProperty(packageJson)));
+        }
+    });
+
+    gulp.watch(globs, ['myapp-angular-templates']);
+});
+
+
+gulp.task('myapp-static-assets', function () {
+    var merged = mergeStream();
+    var getProperty = _.property(['myapp-assets', 'static']);
+
+    var modules = _.concat(['./'], config.modules); // include main app's templates in processing
+    _.each(modules, function(modulePath) {
+        var packageJson = require(modulePath == './' ? './package.json' : path(modulePath, 'package.json'));
+        if (getProperty(packageJson)) {
+            var glob = path(modulePath == './' ? '' : 'node_modules', modulePath, getProperty(packageJson));
+            merged.add(gulp.src(glob));
+        }
     });
 
     return merged.pipe(gulp.dest(config.paths.build));
 });
 
-gulp.task('module-static-assets', function() {
-    var merged = mergeStream();
-    var getProperty = _.property(['myapp-assets', 'css']); // instead of 'css', assets that can be taken as such could be under 'static'
-    _.each(config.modules, function(modulePath) {
-        var packageJson = require(path(modulePath, 'package.json'));
-        if (!getProperty(packageJson)) return;
+gulp.task('watch:myapp-static-assets', function () {
+    var getProperty = _.property(['myapp-assets', 'static']);
 
-        var templateGlob = path('node_modules', modulePath, getProperty(packageJson));
-        var basePath =  path('node_modules', modulePath);
-        merged.add(gulp.src(templateGlob, {base: basePath}));
+    var modules = _.concat(['./'], config.modules); // include main app's templates in processing
+    var globs = [];
+    _.each(modules, function(modulePath) {
+        var packageJson = require(modulePath == './' ? './package.json' : path(modulePath, 'package.json'));
+        if (getProperty(packageJson)) {
+            globs.push(path(modulePath == './' ? '' : 'node_modules', modulePath, getProperty(packageJson)));
+        }
     });
 
-    return merged.pipe(gulp.dest(config.paths.build));
+    gulp.watch(globs, ['myapp-static-assets']);
 });
+
 
 gulp.task('webserver', function() {
     gulp.src(config.paths.build)

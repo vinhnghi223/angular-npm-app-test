@@ -4,7 +4,7 @@
   "license": "MIT",
   "main": "src/navigation/module.js",
   "myapp-assets": {
-    "angular-templates": "src/navigation/**/*.tpl.html"
+    "angular-templates": "src/**/navigation/**/*.tpl.html"
   },
   "dependencies": {
     "angular": "1.4.9",
