@@ -1,6 +1,6 @@
 {
   "name": "@atorma/multimodule-angular-app-app-1",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "MIT",
   "main": "src/app1/module.js",
   "myapp-assets": {
