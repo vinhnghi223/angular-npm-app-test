@@ -6,6 +6,6 @@ module.exports = function() {
     init();
 
     function init() {
-        vm.message = "App 1 view 2 loaded with random number " + Math.random();
+        vm.message = "App 1 View2Ctrl presents to you a random number " + Math.random();
     }
 };

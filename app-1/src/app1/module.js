@@ -10,10 +10,11 @@ module.exports = angular.module('app1', [
 ]).config(routing);
 
 
-function routing($stateProvider) {
+function routing($stateProvider, $urlRouterProvider) {
     $stateProvider.state('app1', {
-        abstract: true,
         url: "/app1",
         templateUrl: 'app1/app1.prt.html'
     });
+
+    $urlRouterProvider.when('/app1', 'app1/view1');
 }
