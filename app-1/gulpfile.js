@@ -25,16 +25,14 @@ gulp.task('build', function (cb) {
         [
             'js-libs',
             'js-app',
-            'html',
-            'resources',
-            'lib-resources'
+            'resources'
         ],
         cb
     );
 });
 
 gulp.task('watch', function (cb) {
-    runSequence(['watch:js-app', 'watch:html', 'watch:resources'], cb);
+    runSequence(['watch:js-app', 'watch:resources'], cb);
 });
 
 gulp.task('run', function (cb) {
@@ -87,30 +85,16 @@ gulp.task('watch:js-app', function () {
 });
 
 
-gulp.task('html', function () {
-    return gulp.src(config.paths.html)
-        .pipe(gulp.dest(config.paths.build));
-});
-
-gulp.task('watch:html', function () {
-    return gulp.watch(config.paths.html, ['html']);
-});
-
-
 gulp.task('resources', function () {
-    return gulp.src(config.paths.resources)
-        .pipe(gulp.dest(config.paths.build + '/resources'));
+    var distResources = require('./package.json')['myapp-assets']['static'];
+    return gulp.src(_.concat(config.paths.resources, distResources))
+        .pipe(gulp.dest(config.paths.build));
 });
 
 gulp.task('watch:resources', function () {
     return gulp.watch(config.paths.resources, ['resources']);
 });
 
-
-gulp.task('lib-resources', function () {
-    return gulp.src(config.paths.libResources)
-        .pipe(gulp.dest(config.paths.build + '/resources'));
-});
 
 gulp.task('webserver', function() {
     gulp.src(config.paths.build)
