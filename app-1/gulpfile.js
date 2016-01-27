@@ -86,8 +86,7 @@ gulp.task('watch:js-app', function () {
 
 
 gulp.task('resources', function () {
-    var distResources = require('./package.json')['myapp-assets']['static'];
-    return gulp.src(_.concat(config.paths.resources, distResources))
+    return gulp.src(config.paths.resources)
         .pipe(gulp.dest(config.paths.build));
 });
 
