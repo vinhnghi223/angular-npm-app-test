@@ -7,7 +7,7 @@
     "static": "src/**/app1/**/*.prt.html"
   },
   "dependencies": {
-    "angular": "1.4.9",
+    "angular": "1.2.29",
     "angular-ui-router": "1.0.0-alpha0",
     "lodash": "4.0.0"
   },
