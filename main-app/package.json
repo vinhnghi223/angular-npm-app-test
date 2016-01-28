@@ -12,6 +12,7 @@
     "lodash": "4.0.0",
     "@atorma/multimodule-angular-app-navigation": "*",
     "@atorma/multimodule-angular-app-app-1": "*",
+    "@atorma/multimodule-angular-app-app-2": "*",
     "@atorma/multimodule-angular-app-common": "*"
   },
   "devDependencies": {
@@ -20,6 +21,7 @@
     "glob": "^6.0.4",
     "gulp": "3.9.0",
     "gulp-angular-templatecache": "^1.8.0",
+    "gulp-bundle-assets": "^2.23.0",
     "gulp-if": "2.0.0",
     "gulp-util": "^3.0.7",
     "gulp-webserver": "^0.9.1",

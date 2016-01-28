@@ -1,0 +1,15 @@
+{
+  "name": "@atorma/multimodule-angular-app-app-2",
+  "version": "0.0.0",
+  "license": "MIT",
+  "main": "src/things/module.js",
+  "myapp-assets": {
+    "static": "src/**/things/**/*.prt.html"
+  },
+  "dependencies": {
+    "angular": "1.2.29",
+    "angular-ui-router": "1.0.0-alpha0",
+    "lodash": "4.0.0"
+  },
+  "devDependencies": {}
+}
