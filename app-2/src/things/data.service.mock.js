@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var angular = require('angular');
 
 var allThings = [
     {
@@ -13,7 +14,10 @@ var allThings = [
     }
 ];
 
-module.exports = function($q) {
+angular.module('things')
+    .factory('thingsDataService', thingsDataService);
+
+function thingsDataService($q) {
 
     return {
         findAll: findAllThings,
@@ -34,6 +38,6 @@ module.exports = function($q) {
         }
     }
 
-};
+}
 
 

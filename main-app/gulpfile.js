@@ -14,8 +14,9 @@ var ngTemplateCache = require('gulp-angular-templatecache');
 var mergeStream = require('merge-stream');
 
 var config = require('./config');
-var browserifiers = require('./browserifiers');
+config.deployMocks = false;
 
+var browserifiers = require('./browserifiers');
 
 
 gulp.task('clean', function () {
@@ -34,15 +35,22 @@ gulp.task('build', function (cb) {
     );
 });
 
+gulp.task('build-mock', function (cb) {
+    config.deployMocks = true;
+    runSequence('build', cb);
+});
+
 gulp.task('watch', function (cb) {
     runSequence(['watch:myapp-js', 'watch:myapp-angular-templates', 'watch:myapp-static-assets'], cb);
+});
+
+gulp.task('run-mock', function (cb) {
+    runSequence('build-mock', ['watch', 'webserver'], cb);
 });
 
 gulp.task('run', function (cb) {
     runSequence('build', ['watch', 'webserver'], cb);
 });
-
-
 
 
 function browserifyBuild(buildOpts) {
@@ -67,14 +75,16 @@ gulp.task('js-libs', function () {
 
 gulp.task('myapp-js', function() {
     return browserifyBuild({
-        browserifier: browserifiers.forApp,
+        browserifier: config.deployMocks ? browserifiers.forMockApp : browserifiers.forApp,
         outputFileName: config.paths.appDestName
     });
 });
 
 gulp.task('watch:myapp-js', function () {
+    var getBrowserifier = config.deployMocks ? browserifiers.forMockApp : browserifiers.forApp;
+
     var watchifier = function(opts) {
-        return watchify(browserifiers.forApp(opts))
+        return watchify(getBrowserifier(opts))
             .on('log', gutil.log.bind(gutil.log, "Watchify (app):"))
             .on('update', build);
     };
@@ -85,6 +95,30 @@ gulp.task('watch:myapp-js', function () {
         return browserifyBuild({
             browserifier: watchifier,
             outputFileName: config.paths.appDestName
+        });
+    }
+});
+
+gulp.task('myapp-mock-js', function() {
+    return browserifyBuild({
+        browserifier: browserifiers.forMocks,
+        outputFileName: config.paths.mockDestName
+    });
+});
+
+gulp.task('watch:myapp-mock-js', function () {
+    var watchifier = function(opts) {
+        return watchify(browserifiers.forMocks(opts))
+            .on('log', gutil.log.bind(gutil.log, "Watchify (app):"))
+            .on('update', build);
+    };
+
+    return build();
+
+    function build() {
+        return browserifyBuild({
+            browserifier: watchifier,
+            outputFileName: config.paths.mockDestName
         });
     }
 });
@@ -163,6 +197,7 @@ gulp.task('watch:myapp-static-assets', function () {
 
     gulp.watch(globs, ['myapp-static-assets']);
 });
+
 
 
 gulp.task('webserver', function() {
