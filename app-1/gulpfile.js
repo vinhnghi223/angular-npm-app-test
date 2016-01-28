@@ -12,8 +12,7 @@ var _ = require('lodash');
 var path = require('join-path');
 
 var config = require('./config');
-var browserifiers = require('./browserifiers');
-
+var browserifyBundler = require('./browserifyBundler');
 
 
 gulp.task('clean', function () {
@@ -40,13 +39,13 @@ gulp.task('run', function (cb) {
 });
 
 
-function browserifyBuild(buildOpts) {
+function executeBundling(buildOpts) {
     var browserifyOpts = {
         debug: true
     };
-    var browserified = buildOpts.browserifier(browserifyOpts);
+    var browserifyBundler = buildOpts.browserifyBundler(browserifyOpts);
 
-    return browserified.bundle()
+    return browserifyBundler.bundle()
         .on('error', gutil.log.bind(gutil.log, "Browserify error:"))
         .pipe(source(buildOpts.outputFileName))
         .pipe(buffer())
@@ -54,34 +53,35 @@ function browserifyBuild(buildOpts) {
 }
 
 gulp.task('js-libs', function () {
-    return browserifyBuild({
-        browserifier: browserifiers.forLibs,
+    return executeBundling({
+        browserifyBundler: browserifyBundler.forLibs,
         outputFileName: config.paths.libDestName
     });
 });
 
 gulp.task('js-app', function() {
-    return browserifyBuild({
-        browserifier: browserifiers.forApp,
+    return executeBundling({
+        browserifyBundler: browserifyBundler.forApp,
         outputFileName: config.paths.appDestName
     });
 });
 
 gulp.task('watch:js-app', function () {
-    var watchifier = function(opts) {
-        return watchify(browserifiers.forApp(opts))
+    var watchifyBundler = function(opts) {
+        return watchify(browserifyBundler.forApp(opts))
             .on('log', gutil.log.bind(gutil.log, "Watchify (app):"))
             .on('update', build);
     };
 
-    return build();
-
-    function build() {
-        return browserifyBuild({
-            browserifier: watchifier,
+    var build = function() {
+        return executeBundling({
+            browserifyBundler: watchifyBundler,
             outputFileName: config.paths.appDestName
         });
-    }
+    };
+
+    return build();
+
 });
 
 
@@ -99,6 +99,7 @@ gulp.task('webserver', function() {
     gulp.src(config.paths.build)
         .pipe(webserver({
             port: 8081,
-            livereload: true
+            livereload: true,
+            open:true
         }));
 });
