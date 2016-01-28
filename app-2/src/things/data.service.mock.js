@@ -14,6 +14,8 @@ var allThings = [
     }
 ];
 
+/* Because this is a mock service, we want to add it to the angular module in this file -- instead of having to change the require(..) in module.js */
+
 angular.module('things')
     .factory('thingsDataService', thingsDataService);
 
