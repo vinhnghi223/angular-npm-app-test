@@ -16,7 +16,7 @@ var mergeStream = require('merge-stream');
 var config = require('./config');
 config.deployMocks = false;
 
-var browserifiers = require('./browserifiers');
+var browserifyBundler = require('./browserifyBundler'); //browserify bundling mechanism
 
 
 gulp.task('clean', function () {
@@ -52,75 +52,74 @@ gulp.task('run', function (cb) {
     runSequence('build', ['watch', 'webserver'], cb);
 });
 
-
-function browserifyBuild(buildOpts) {
+function executeBundling(bundleOpts) {
     var browserifyOpts = {
         debug: true
     };
-    var browserified = buildOpts.browserifier(browserifyOpts);
+    var browserifyBundler = bundleOpts.browserifyBundler(browserifyOpts);
 
-    return browserified.bundle()
+    return browserifyBundler.bundle() //start bundling
         .on('error', gutil.log.bind(gutil.log, "Browserify error:"))
-        .pipe(source(buildOpts.outputFileName))
+        .pipe(source(bundleOpts.outputFileName))
         .pipe(buffer())
         .pipe(gulp.dest(config.paths.build));
 }
 
 gulp.task('js-libs', function () {
-    return browserifyBuild({
-        browserifier: browserifiers.forLibs,
+    return executeBundling({
+        browserifyBundler: browserifyBundler.forLibs,
         outputFileName: config.paths.libDestName
     });
 });
 
 gulp.task('myapp-js', function() {
-    return browserifyBuild({
-        browserifier: config.deployMocks ? browserifiers.forMockApp : browserifiers.forApp,
+    return executeBundling({
+        browserifyBundler: config.deployMocks ? browserifyBundler.forMockApp : browserifyBundler.forApp,
         outputFileName: config.paths.appDestName
     });
 });
 
 gulp.task('watch:myapp-js', function () {
-    var getBrowserifier = config.deployMocks ? browserifiers.forMockApp : browserifiers.forApp;
+    var browserifyBundlerFn = config.deployMocks ? browserifyBundler.forMockApp : browserifyBundler.forApp;
 
-    var watchifier = function(opts) {
-        return watchify(getBrowserifier(opts))
+    var watchifyBundler = function(opts) {
+        return watchify(browserifyBundlerFn(opts))
             .on('log', gutil.log.bind(gutil.log, "Watchify (app):"))
             .on('update', build);
     };
 
-    return build();
-
-    function build() {
-        return browserifyBuild({
-            browserifier: watchifier,
+    var build = function() {
+        return executeBundling({
+            browserifyBundler: watchifyBundler,
             outputFileName: config.paths.appDestName
         });
-    }
+    };
+
+    return build();
 });
 
 gulp.task('myapp-mock-js', function() {
-    return browserifyBuild({
-        browserifier: browserifiers.forMocks,
+    return executeBundling({
+        browserifyBundler: browserifyBundler.forMocks,
         outputFileName: config.paths.mockDestName
     });
 });
 
 gulp.task('watch:myapp-mock-js', function () {
-    var watchifier = function(opts) {
-        return watchify(browserifiers.forMocks(opts))
+    var watchifyBundler = function(opts) {
+        return watchify(browserifyBundler.forMocks(opts))
             .on('log', gutil.log.bind(gutil.log, "Watchify (app):"))
             .on('update', build);
     };
 
-    return build();
-
-    function build() {
-        return browserifyBuild({
-            browserifier: watchifier,
+    var build = function() {
+        return executeBundling({
+            browserifyBundler: watchifyBundler,
             outputFileName: config.paths.mockDestName
         });
-    }
+    };
+
+    return build();
 });
 
 /*
@@ -204,6 +203,7 @@ gulp.task('webserver', function() {
     gulp.src(config.paths.build)
         .pipe(webserver({
             port: 8080,
-            livereload: true
+            livereload: true,
+            open:true
         }));
 });

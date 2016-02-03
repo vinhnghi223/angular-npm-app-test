@@ -17,12 +17,11 @@ module.exports = {
 };
 
 function forLibs(browserifyOpts) {
-    return getInstance(browserifyOpts)
-        .require(libs);
+    return createBundler(browserifyOpts).require(libs);
 }
 
 function forApp(browserifyOpts) {
-    return getInstance(browserifyOpts)
+    return createBundler(browserifyOpts)
         .add(config.paths.appSourceMain)
         .external(libs);
 }
@@ -41,7 +40,7 @@ function forMockApp(browserifyOpts) {
     return browserifier;
 }
 
-function getInstance(additionalOpts) {
+function createBundler(additionalOpts) {
     var opts = _.extend({}, additionalOpts, watchify.args);
     return browserify(opts);
 }
